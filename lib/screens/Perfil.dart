@@ -10,12 +10,12 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  final _nameController = TextEditingController();
-  final _passwordController = TextEditingController();
-  final _emailController = TextEditingController();
+  final _nameController = TextEditingController(text: 'SergiMàster');
+  final _usernameController = TextEditingController(text: 'Sergi');
+  final _descriptionController = TextEditingController(
+      text: 'Barceloní amb moltes ganes de descobrir on miccionar a gust a la ciutat.');
   File? _profileImage;
 
-  // Mètode per seleccionar una imatge de la galeria
   Future<void> _pickImage() async {
     final ImagePicker _picker = ImagePicker();
     final XFile? pickedFile = await _picker.pickImage(source: ImageSource.gallery);
@@ -27,44 +27,21 @@ class _ProfilePageState extends State<ProfilePage> {
     }
   }
 
-  // Mètode per mostrar la finestra de diàleg per editar les dades
-  void _editProfile() {
+  void _editDescription() {
     showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text('Editar perfil'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: _nameController,
-                decoration: const InputDecoration(labelText: 'Nom'),
-              ),
-              TextField(
-                controller: _emailController,
-                decoration: const InputDecoration(labelText: 'Gmail'),
-              ),
-              TextField(
-                controller: _passwordController,
-                obscureText: true,
-                decoration: const InputDecoration(labelText: 'Contrasenya'),
-              ),
-            ],
+          title: const Text('Editar Descripció'),
+          content: TextField(
+            controller: _descriptionController,
+            maxLines: 3,
+            decoration: const InputDecoration(border: OutlineInputBorder()),
           ),
           actions: [
             TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text('Cancelar'),
-            ),
-            TextButton(
-              onPressed: () {
-                setState(() {});
-                Navigator.of(context).pop();
-              },
-              child: const Text('Guardar'),
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Tancar'),
             ),
           ],
         );
@@ -75,92 +52,116 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Editar Perfil'),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-        ),
-      ),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Cartellera amb el nom i correu de l'usuari
-              GestureDetector(
-                onTap: _editProfile, // Permet editar al clicar a la cartellera
-                child: Card(
-                  elevation: 4.0,
-                  child: ListTile(
-                    leading: CircleAvatar(
+              Container(
+                color: Colors.grey[300], 
+                padding: const EdgeInsets.all(8.0), 
+                child: Row(
+                  children: [
+                    CircleAvatar(
                       radius: 30,
                       backgroundImage: _profileImage != null
                           ? FileImage(_profileImage!)
-                          : const AssetImage('assets/default_profile.jpg') as ImageProvider,
+                          : const AssetImage('assets/profile.jpg') as ImageProvider,
                     ),
-                    title: Text(_nameController.text.isEmpty ? 'Nom d\'usuari' : _nameController.text),
-                    subtitle: Text(_emailController.text.isEmpty ? 'user@gmail.com' : _emailController.text),
-                    trailing: const Icon(Icons.edit),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 20),
-
-              // Seleccionar imatge de perfil
-              GestureDetector(
-                onTap: _pickImage,
-                child: CircleAvatar(
-                  radius: 50,
-                  backgroundImage: _profileImage != null
-                      ? FileImage(_profileImage!)
-                      : const AssetImage('assets/default_profile.jpg') as ImageProvider,
-                  child: _profileImage == null
-                      ? const Icon(Icons.add_a_photo, size: 40, color: Colors.white)
-                      : null,
-                ),
-              ),
-              const SizedBox(height: 20),
-
-              // Camp per editar el nom
-              TextField(
-                controller: _nameController,
-                decoration: const InputDecoration(
-                  labelText: 'Nom',
-                  border: OutlineInputBorder(),
-                ),
-              ),
-              const SizedBox(height: 20),
-
-              // Camp per editar la contrasenya
-              TextField(
-                controller: _passwordController,
-                obscureText: true,
-                decoration: const InputDecoration(
-                  labelText: 'Contrasenya',
-                  border: OutlineInputBorder(),
-                ),
-              ),
-              const SizedBox(height: 20),
-
-              // Scroll amb icones de lavabo
-              SizedBox(
-                height: 150,
-                child: ListView.builder(
-                  itemCount: 10,  // Pots ajustar el nombre d'icones
-                  scrollDirection: Axis.horizontal,
-                  itemBuilder: (context, index) {
-                    return const Padding(
-                      padding: EdgeInsets.all(8.0),
-                      child: Icon(
-                        Icons.bathroom,
-                        size: 40,
-                        color: Colors.blue,
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          TextField(
+                            controller: _nameController,
+                            decoration: const InputDecoration(
+                              border: InputBorder.none,
+                              isDense: true,
+                              contentPadding: EdgeInsets.zero,
+                            ),
+                            style: const TextStyle(fontSize: 16),
+                          ),
+                          TextField(
+                            controller: _usernameController,
+                            decoration: const InputDecoration(
+                              border: InputBorder.none,
+                              isDense: true,
+                              contentPadding: EdgeInsets.zero,
+                            ),
+                            style: const TextStyle(fontSize: 16, color: Colors.black54),
+                          ),
+                        ],
                       ),
-                    );
-                  },
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.edit),
+                      onPressed: _pickImage,
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 20),
+
+              // Nivell
+              const Text('Nivell',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 10),
+              const Center(
+                child: Icon(
+                  Icons.emoji_events,
+                  color: Colors.amber,
+                  size: 60,
+                ),
+              ),
+
+              const SizedBox(height: 20),
+
+              // Icons de recompenses
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.emoji_emotions, size: 40),
+                    onPressed: () {},
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.local_parking, size: 40),
+                    onPressed: () {},
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.add_circle_outline, size: 40),
+                    onPressed: () {},
+                  ),
+                ],
+              ),
+
+              const SizedBox(height: 20),
+
+              // Descripció
+              const Text('Descripció:',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, fontStyle: FontStyle.italic)),
+              const SizedBox(height: 5),
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: Colors.grey[200],
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        _descriptionController.text,
+                        style: const TextStyle(fontSize: 14, fontStyle: FontStyle.italic),
+                      ),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.edit),
+                      onPressed: _editDescription,
+                    ),
+                  ],
                 ),
               ),
             ],

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_2/screens/Configuracio.dart';
+import 'package:flutter_application_2/screens/Ranking.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:http/http.dart' as http;
@@ -92,8 +94,8 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       ),
       const ProfilePage(),
-      const Center(child: Text('Configuració', style: TextStyle(fontSize: 24))),
-      const Center(child: Text('Ranking', style: TextStyle(fontSize: 24))),
+      const Configuracio(),
+       Ranking(),
     ]);
   }
 
