@@ -5,6 +5,7 @@ import 'package:flutter_application_2/screens/Ranking.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:geolocator/geolocator.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -16,18 +17,20 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final MapController _mapController = MapController();
   final TextEditingController _searchController = TextEditingController();
-  LatLng? _searchedLocation;
+  LatLng? _searchedLocation;  // Ubicació actual del dispositiu
+  LatLng? _searchedQueryLocation; // Ubicació de la cerca
   List<Map<String, dynamic>> _ubicacions = [];
   List<int> _lavaboIds = [];
   List<Map<String, dynamic>> _searchResults = [];
   bool _isSearching = false;
 
-  int _selectedIndex = 0; 
+  int _selectedIndex = 0;
 
   @override
   void initState() {
     super.initState();
     _loadUbicacions();
+    _getCurrentLocation(); // Obtenir la ubicació actual.
   }
 
   Future<void> _loadUbicacions() async {
@@ -39,10 +42,45 @@ class _HomeScreenState extends State<HomeScreen> {
       _ubicacions = List<Map<String, dynamic>>.from(responseUbicacions);
       _lavaboIds = responseLavabos.map<int>((lavabo) => lavabo['id_ubicacio'] as int).toList();
     });
-
-    print("✅ Ubicacions carregades: $_ubicacions");
-    print("🚻 IDs de lavabos carregats: $_lavaboIds");
   }
+
+  Future<void> _getCurrentLocation() async {
+  bool serviceEnabled;
+  LocationPermission permission;
+
+  serviceEnabled = await Geolocator.isLocationServiceEnabled();
+  if (!serviceEnabled) {
+    print('Location services are disabled.');
+    return;
+  }
+
+  permission = await Geolocator.checkPermission();
+  if (permission == LocationPermission.denied) {
+    permission = await Geolocator.requestPermission();
+    if (permission == LocationPermission.denied) {
+      print('Location permissions are denied');
+      return;
+    }
+  }
+
+  if (permission == LocationPermission.deniedForever) {
+    print('Location permissions are permanently denied.');
+    return;
+  }
+
+  Position position = await Geolocator.getCurrentPosition(
+    desiredAccuracy: LocationAccuracy.high,
+  );
+
+  setState(() {
+    _searchedLocation = LatLng(position.latitude, position.longitude);
+  });
+
+  print("Ubicació actual: Lat: ${position.latitude}, Lon: ${position.longitude}");
+
+  _mapController.move(_searchedLocation!, 15.0);
+}
+
 
   Widget _buildMarkerLayer() {
     List<Marker> markers = [];
@@ -59,7 +97,7 @@ class _HomeScreenState extends State<HomeScreen> {
               double.parse(ubicacio['latitud'].toString()),
               double.parse(ubicacio['longitud'].toString()),
             ),
-            child: Icon(
+            child: const Icon(
               Icons.location_on,
               color: Colors.red,
               size: 40.0,
@@ -77,7 +115,22 @@ class _HomeScreenState extends State<HomeScreen> {
           point: _searchedLocation!,
           child: const Icon(
             Icons.location_on,
-            color: Colors.blue,
+            color: Colors.green, 
+            size: 40.0,
+          ),
+        ),
+      );
+    }
+
+    if (_searchedQueryLocation != null) {
+      markers.add(
+        Marker(
+          width: 40.0,
+          height: 40.0,
+          point: _searchedQueryLocation!,
+          child: const Icon(
+            Icons.location_on,
+            color: Colors.blue, // Color blau per la ubicació cercada
             size: 40.0,
           ),
         ),
@@ -89,7 +142,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void _onItemTapped(int index) {
     setState(() {
-      _selectedIndex = index; 
+      _selectedIndex = index;
     });
   }
 
@@ -97,7 +150,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Center(child: Text('Bathroom Finder'))),
-      body: _getBody(), 
+      body: _getBody(),
       bottomNavigationBar: BottomNavigationBar(
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.map), label: 'Mapa'),
@@ -187,13 +240,13 @@ class _HomeScreenState extends State<HomeScreen> {
                               final lon = double.parse(result['longitud'].toString());
 
                               setState(() {
-                                _searchedLocation = LatLng(lat, lon);
+                                _searchedQueryLocation = LatLng(lat, lon);
                                 _searchController.text = result['nom'] ?? '';
                                 _isSearching = false;
                                 _searchResults = [];
                               });
 
-                              _mapController.move(_searchedLocation!, 15.0);
+                              _mapController.move(_searchedQueryLocation!, 15.0);
                             },
                           );
                         },
@@ -205,20 +258,20 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
         );
       case 1:
-        return const ProfilePage(); 
+        return const ProfilePage();
       case 2:
         return const Configuracio();
       case 3:
-        return  Ranking();
+        return Ranking();
       default:
-        return const HomeScreen(); 
+        return const HomeScreen();
     }
   }
 
   void _searchLocation(String query) async {
     if (query.isEmpty) {
       setState(() {
-        _searchedLocation = null;
+        _searchedQueryLocation = null;
         _searchResults = [];
         _isSearching = false;
       });
