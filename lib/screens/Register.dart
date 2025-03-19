@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_2/screens/Login.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'HomeScreen.dart';
 
 class RegisterScreen extends StatefulWidget {
   @override
@@ -15,45 +15,74 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final TextEditingController _nameController = TextEditingController();
 
   Future<void> _register() async {
-    final email = _gmailController.text.trim();
-    final password = _passwordController.text.trim();
-    final username = _usernameController.text.trim();
-    final name = _nameController.text.trim();
-
     try {
-      // Intentar registrar l'usuari
+      final email = _gmailController.text.trim();
+      final password = _passwordController.text.trim();
+      final username = _usernameController.text.trim();
+      final name = _nameController.text.trim();
+
+      if (email.isEmpty || password.isEmpty || username.isEmpty || name.isEmpty) {
+        _showError("Tots els camps són obligatoris.");
+        return;
+      }
+
       final signUpResponse = await Supabase.instance.client.auth.signUp(
         email: email,
         password: password,
       );
+
+      if (signUpResponse.user == null) {
+        _showError("No s'ha pogut registrar l'usuari.");
+        return;
+      }
+
       final userId = signUpResponse.user!.id;
 
-      // Insertar a la taula 'Users'
-      final usersResponse = await Supabase.instance.client.from('Users').insert([
+      await Supabase.instance.client.from('Users').insert([
         {'UID': userId, 'Email': email}
       ]);
 
-      // Insertar a la taula 'Usuaris' (amb cometes per respectar la capitalització)
-      final usuarisResponse = await Supabase.instance.client.from('"Usuaris"').insert([
-        {'id_usuaris': userId, 'username': username, 'name': name, 'punts': 0, 'imatge': ''}
-      ]);
-      // Redirigir a la pantalla principal després de l'èxit
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomeScreen()));
+      final existingUser = await Supabase.instance.client.from('usuaris')
+          .select()
+          .eq('id_usuaris', userId)
+          .maybeSingle();
+
+      if (existingUser == null) {
+        await Supabase.instance.client.from('usuaris').insert([
+          {
+            'id_usuaris': userId,
+            'username': username,
+            'name': name,
+            'punts': 0,
+            'imatge': '',
+          }
+        ]);
+      }
+
+      Navigator.pushReplacement(
+          context, MaterialPageRoute(builder: (context) => LoginScreen()));
     } catch (e) {
-      _showError("Error en el registre: $e");
+      _showError("Error inesperat: $e");
     }
   }
 
   void _showError(String message) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text("Error"),
-        content: Text(message),
-        actions: [
-          TextButton(onPressed: () => Navigator.of(context).pop(), child: Text("OK")),
-        ],
-      ),
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Error"),
+          content: Text(message),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text("OK"),
+            ),
+          ],
+        );
+      },
     );
   }
 
@@ -69,9 +98,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
             children: [
               Text('Registre', style: GoogleFonts.lobster(fontSize: 40, color: Colors.white)),
               SizedBox(height: 20),
-              buildTextField(_usernameController, 'Usename d\'usuari', Icons.person),
+              buildTextField(_usernameController, 'Username', Icons.person),
               SizedBox(height: 20),
-              buildTextField(_nameController, 'Nom d\'usuari', Icons.person),
+              buildTextField(_nameController, 'Nom', Icons.person),
               SizedBox(height: 20),
               buildTextField(_gmailController, 'Gmail', Icons.email),
               SizedBox(height: 20),
@@ -85,9 +114,27 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
   }
 
-  ButtonStyle _buttonStyle() => ElevatedButton.styleFrom(backgroundColor: Colors.white, padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15));
+  ButtonStyle _buttonStyle() => ElevatedButton.styleFrom(
+        backgroundColor: Colors.white,
+        padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+      );
 
   Widget buildTextField(TextEditingController controller, String label, IconData icon, {bool obscureText = false}) {
-    return TextField(controller: controller, obscureText: obscureText, decoration: InputDecoration(labelText: label, prefixIcon: Icon(icon)));
+    return TextField(
+      controller: controller,
+      obscureText: obscureText,
+      style: TextStyle(color: Colors.white),
+      decoration: InputDecoration(
+        labelText: label,
+        labelStyle: TextStyle(color: Colors.white),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(15),
+          borderSide: BorderSide(color: Colors.white),
+        ),
+        prefixIcon: Icon(icon, color: Colors.white),
+        filled: true,
+        fillColor: Colors.blueAccent.withOpacity(0.3),
+      ),
+    );
   }
 }
