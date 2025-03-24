@@ -42,13 +42,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
         {'UID': userId, 'Email': email}
       ]);
 
-      final existingUser = await Supabase.instance.client.from('usuaris')
+      final existingUser = await Supabase.instance.client.from('usuari')
           .select()
           .eq('id_usuaris', userId)
           .maybeSingle();
 
       if (existingUser == null) {
-        await Supabase.instance.client.from('usuaris').insert([
+        await Supabase.instance.client.from('usuari').insert([
           {
             'id_usuaris': userId,
             'username': username,

@@ -26,9 +26,10 @@ class _LoginScreenState extends State<LoginScreen> {
       if (response.user == null) {
         _showError("Error d'autenticació: Credencials incorrectes");
       } else {
+        String userId = response.user?.id ?? '';
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => HomeScreen()),
+          MaterialPageRoute(builder: (context) => HomeScreen(userId: userId,)),
         );
       }
     } catch (e) {

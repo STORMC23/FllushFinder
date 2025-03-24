@@ -8,7 +8,8 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  final String userId;
+  const HomeScreen({super.key, required this.userId});
 
   @override
   _HomeScreenState createState() => _HomeScreenState();
@@ -258,13 +259,13 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
         );
       case 1:
-        return const ProfilePage();
+        return UserProfile (userId: widget.userId);
       case 2:
-        return const Configuracio();
+        return SettingsPage(userId: widget.userId);
       case 3:
         return Ranking();
       default:
-        return const HomeScreen();
+        return HomeScreen(userId: widget.userId);
     }
   }
 
