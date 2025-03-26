@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class Ranking extends StatefulWidget {
   @override
@@ -6,7 +7,47 @@ class Ranking extends StatefulWidget {
 }
 
 class _RankingState extends State<Ranking> {
+  final _supabase = Supabase.instance.client;
   int _selectedTab = 1;
+  List<dynamic> _users = [];
+  List<dynamic> _locations = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchUsers();
+    _fetchLocations();
+  }
+
+  Future<void> _fetchUsers() async {
+    try {
+      final response = await _supabase
+          .from('usuari')
+          .select('username, punts')
+          .order('punts', ascending: false)
+          .limit(10);
+      setState(() {
+        _users = response;
+      });
+    } catch (e) {
+      print('Error obtenint el rànquing d\'usuaris: $e');
+    }
+  }
+
+  Future<void> _fetchLocations() async {
+    try {
+      final response = await _supabase
+          .from('lavabos')
+          .select('descripcio, valoracio')
+          .order('valoracio', ascending: false)
+          .limit(10);
+      setState(() {
+        _locations = response;
+      });
+    } catch (e) {
+      print('Error obtenint el rànquing de localitzacions: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -58,14 +99,16 @@ class _RankingState extends State<Ranking> {
   }
 
   Widget _buildUsersRanking() {
-    return ListView(
+    return ListView.builder(
       padding: const EdgeInsets.all(10),
-      children: [
-        _buildUserTile("Sergi_Voda", "2142p", Icons.emoji_events),
-        _buildUserTile("Isa_Vader", "2021p", Icons.emoji_events_outlined),
-        _buildUserTile("GutiJedi", "1820p", Icons.emoji_events_outlined),
-        _buildUserTile("JoanKenobi", "1419p", Icons.person),
-      ],
+      itemCount: _users.length,
+      itemBuilder: (context, index) {
+        final user = _users[index];
+        final icon = index == 0
+            ? Icons.emoji_events
+            : (index < 3 ? Icons.emoji_events_outlined : Icons.person);
+        return _buildUserTile(user['username'], "${user['punts']}p", icon);
+      },
     );
   }
 
@@ -88,12 +131,13 @@ class _RankingState extends State<Ranking> {
   }
 
   Widget _buildLocationsRanking() {
-    return ListView(
+    return ListView.builder(
       padding: const EdgeInsets.all(10),
-      children: [
-        _buildLocationTile("C. Francesc Macià", 4),
-        _buildLocationTile("C. Tres Torres", 5),
-      ],
+      itemCount: _locations.length,
+      itemBuilder: (context, index) {
+        final location = _locations[index];
+        return _buildLocationTile(location['descripcio'], location['valoracio']);
+      },
     );
   }
 
