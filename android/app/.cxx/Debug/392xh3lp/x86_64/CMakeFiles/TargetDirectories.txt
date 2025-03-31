@@ -1,0 +1,2 @@
+C:/Users/alber/ProjectesFlutter/FlushFinder/FllushFinder/android/app/.cxx/Debug/392xh3lp/x86_64/CMakeFiles/edit_cache.dir
+C:/Users/alber/ProjectesFlutter/FlushFinder/FllushFinder/android/app/.cxx/Debug/392xh3lp/x86_64/CMakeFiles/rebuild_cache.dir
