@@ -18,8 +18,8 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final MapController _mapController = MapController();
   final TextEditingController _searchController = TextEditingController();
-  LatLng? _searchedLocation;  // Ubicació actual del dispositiu
-  LatLng? _searchedQueryLocation; // Ubicació de la cerca
+  LatLng? _searchedLocation;
+  LatLng? _searchedQueryLocation;
   List<Map<String, dynamic>> _ubicacions = [];
   List<int> _lavaboIds = [];
   List<Map<String, dynamic>> _searchResults = [];
@@ -31,7 +31,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     _loadUbicacions();
-    _getCurrentLocation(); // Obtenir la ubicació actual.
+    _getCurrentLocation();
   }
 
   Future<void> _loadUbicacions() async {
@@ -46,42 +46,41 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _getCurrentLocation() async {
-  bool serviceEnabled;
-  LocationPermission permission;
+    bool serviceEnabled;
+    LocationPermission permission;
 
-  serviceEnabled = await Geolocator.isLocationServiceEnabled();
-  if (!serviceEnabled) {
-    print('Location services are disabled.');
-    return;
-  }
-
-  permission = await Geolocator.checkPermission();
-  if (permission == LocationPermission.denied) {
-    permission = await Geolocator.requestPermission();
-    if (permission == LocationPermission.denied) {
-      print('Location permissions are denied');
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      print('Location services are disabled.');
       return;
     }
+
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        print('Location permissions are denied');
+        return;
+      }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      print('Location permissions are permanently denied.');
+      return;
+    }
+
+    Position position = await Geolocator.getCurrentPosition(
+      desiredAccuracy: LocationAccuracy.high,
+    );
+
+    setState(() {
+      _searchedLocation = LatLng(position.latitude, position.longitude);
+    });
+
+    print("Ubicació actual: Lat: ${position.latitude}, Lon: ${position.longitude}");
+
+    _mapController.move(_searchedLocation!, 15.0);
   }
-
-  if (permission == LocationPermission.deniedForever) {
-    print('Location permissions are permanently denied.');
-    return;
-  }
-
-  Position position = await Geolocator.getCurrentPosition(
-    desiredAccuracy: LocationAccuracy.high,
-  );
-
-  setState(() {
-    _searchedLocation = LatLng(position.latitude, position.longitude);
-  });
-
-  print("Ubicació actual: Lat: ${position.latitude}, Lon: ${position.longitude}");
-
-  _mapController.move(_searchedLocation!, 15.0);
-}
-
 
   Widget _buildMarkerLayer() {
     List<Marker> markers = [];
@@ -98,10 +97,37 @@ class _HomeScreenState extends State<HomeScreen> {
               double.parse(ubicacio['latitud'].toString()),
               double.parse(ubicacio['longitud'].toString()),
             ),
-            child: const Icon(
-              Icons.location_on,
-              color: Colors.red,
-              size: 40.0,
+            child: GestureDetector(
+              onTap: () {
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      title: Text(ubicacio['nom'] ?? 'Lavabo'),
+                      content: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text('Valoracio: ${ubicacio['valoracio'] ?? 'No disponible'}'),
+                          Text('Esta creat per un usuari: ${ubicacio['creacio_usuari'] ?? 'No disponible'}'),
+                        ],
+                      ),
+                      actions: [
+                        TextButton(
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                          child: Text('Tancar'),
+                        ),
+                      ],
+                    );
+                  },
+                );
+              },
+              child: const Icon(
+                Icons.location_on,
+                color: Colors.red,
+                size: 40.0,
+              ),
             ),
           ),
         );
@@ -116,7 +142,7 @@ class _HomeScreenState extends State<HomeScreen> {
           point: _searchedLocation!,
           child: const Icon(
             Icons.location_on,
-            color: Colors.green, 
+            color: Colors.green,
             size: 40.0,
           ),
         ),
@@ -131,7 +157,7 @@ class _HomeScreenState extends State<HomeScreen> {
           point: _searchedQueryLocation!,
           child: const Icon(
             Icons.location_on,
-            color: Colors.blue, // Color blau per la ubicació cercada
+            color: Colors.blue,
             size: 40.0,
           ),
         ),
@@ -184,9 +210,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   subdomains: const ['a', 'b', 'c'],
                 ),
                 _buildMarkerLayer(),
-              ],
-            ),
-            Positioned(
+                Positioned(
               top: 20,
               left: 20,
               right: 80,
@@ -256,10 +280,12 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
             ),
+              ],
+            ),
           ],
         );
       case 1:
-        return UserProfile (userId: widget.userId);
+        return UserProfile(userId: widget.userId);
       case 2:
         return SettingsPage(userId: widget.userId);
       case 3:
