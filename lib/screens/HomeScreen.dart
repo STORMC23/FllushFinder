@@ -210,6 +210,76 @@ class _HomeScreenState extends State<HomeScreen> {
                   subdomains: const ['a', 'b', 'c'],
                 ),
                 _buildMarkerLayer(),
+                Positioned(
+              top: 20,
+              left: 20,
+              right: 80,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(10.0),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.1),
+                      blurRadius: 5,
+                      spreadRadius: 2,
+                    ),
+                  ],
+                ),
+                child: Column(
+                  children: [
+                    Row(
+                      children: [
+                        const Icon(Icons.search, color: Colors.black54),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: TextField(
+                            controller: _searchController,
+                            decoration: const InputDecoration(
+                              hintText: 'Cerca una ubicació...',
+                              border: InputBorder.none,
+                            ),
+                            onChanged: (query) {
+                              if (!_isSearching) {
+                                setState(() {
+                                  _isSearching = true;
+                                });
+                              }
+                              _searchLocation(query);
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                    if (_isSearching && _searchResults.isNotEmpty)
+                      ListView.builder(
+                        shrinkWrap: true,
+                        itemCount: _searchResults.length,
+                        itemBuilder: (context, index) {
+                          final result = _searchResults[index];
+                          return ListTile(
+                            title: Text(result['nom']),
+                            onTap: () {
+                              final lat = double.parse(result['latitud'].toString());
+                              final lon = double.parse(result['longitud'].toString());
+
+                              setState(() {
+                                _searchedQueryLocation = LatLng(lat, lon);
+                                _searchController.text = result['nom'] ?? '';
+                                _isSearching = false;
+                                _searchResults = [];
+                              });
+
+                              _mapController.move(_searchedQueryLocation!, 15.0);
+                            },
+                          );
+                        },
+                      ),
+                  ],
+                ),
+              ),
+            ),
               ],
             ),
           ],
