@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_2/screens/Configuracio.dart';
 import 'package:flutter_application_2/screens/Perfil.dart';
 import 'package:flutter_application_2/screens/Ranking.dart';
+import 'package:flutter_application_2/screens/Toilet.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -99,29 +100,27 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             child: GestureDetector(
               onTap: () {
-                showDialog(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return AlertDialog(
-                      title: Text(ubicacio['nom'] ?? 'Lavabo'),
-                      content: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text('Valoracio: ${ubicacio['valoracio'] ?? 'No disponible'}'),
-                          Text('Esta creat per un usuari: ${ubicacio['creacio_usuari'] ?? 'No disponible'}'),
-                        ],
-                      ),
-                      actions: [
-                        TextButton(
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          },
-                          child: Text('Tancar'),
-                        ),
-                      ],
-                    );
-                  },
+                final lavabo = _lavaboIds.firstWhere(
+                  (id) => id == ubicacio['id_ubicacio'],
+                  orElse: () => -1,
                 );
+                if (lavabo != -1) {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => LavaboInfo(lavaboId: lavabo),
+                    ),
+                  );
+                } else {
+                  showDialog(
+                    context: context, 
+                    builder: (BuildContext context) {
+                      return const AlertDialog(
+                        title: Text("No s'ha trobat el lavabo, disculpi"),
+                      );
+                    }
+                  );
+                }
               },
               child: const Icon(
                 Icons.location_on,
