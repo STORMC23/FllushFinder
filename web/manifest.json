@@ -1,11 +1,11 @@
 {
-    "name": "flutter_application_2",
-    "short_name": "flutter_application_2",
+    "name": "Flush Finder",
+    "short_name": "Flush Finder",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "description": "Need to find a bathroom nearby? Flush Finder has you covered! Whether you're out and about or exploring a new city, Flush Finder helps you quickly locate the nearest restrooms so you can go when you gotta go — anytime, anywhere.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

@@ -1,12 +1,12 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.flutter_application_2">
+    package="com.example.Flush_Finder">
 
     <!-- Permisos necessaris per obtenir la ubicació -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
     <application
-        android:label="flutter_application_2"
+        android:label="Flush_Finder"
         android:name=".MyApplication"
         android:icon="@mipmap/ic_launcher">
         
