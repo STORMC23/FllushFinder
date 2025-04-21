@@ -124,13 +124,14 @@ class _LavaboInfoState extends State<LavaboInfo> {
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Informació del lavabo'),
         backgroundColor: const Color.fromARGB(255, 187, 223, 246),
+        elevation: 4.0,
+        shadowColor: Colors.black.withValues(),
       ),
       body: correctResponse
           ? Column(
@@ -167,7 +168,7 @@ class _LavaboInfoState extends State<LavaboInfo> {
                     color: Colors.white,
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.05),
+                        color: const Color.fromARGB(76, 92, 92, 92).withValues(),
                         blurRadius: 8,
                         offset: Offset(0, 2),
                       ),
@@ -286,9 +287,10 @@ class _LavaboInfoState extends State<LavaboInfo> {
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.only(left: 8.0),
+                  padding: const EdgeInsets.only(left: 8.0, right: 8.0),
                   child: Text(
                     _mockDescripcio,
+                    textAlign: TextAlign.justify,
                     style: const TextStyle(fontSize: 16),
                   ),
                 ),
@@ -339,13 +341,25 @@ class _LavaboInfoState extends State<LavaboInfo> {
       ),
       itemBuilder: (context, index) {
         final imagePath = _imatgesLavabo[index];
-        return ClipRRect(
-          borderRadius: BorderRadius.circular(10),
-          child: Image.asset(
-            imagePath,
-            fit: BoxFit.cover,
-            errorBuilder: (context, error, stackTrace) =>
-                const Icon(Icons.broken_image),
+        return Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.2),
+                blurRadius: 6,
+                offset: const Offset(2, 4), // sombra hacia la derecha y abajo
+              ),
+            ],
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(10),
+            child: Image.asset(
+              imagePath,
+              fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) =>
+                  const Icon(Icons.broken_image),
+            ),
           ),
         );
       },
@@ -368,6 +382,8 @@ class _LavaboInfoState extends State<LavaboInfo> {
 
         return Card(
           color: Colors.grey[100],
+          elevation: 4.0,
+          shadowColor: Colors.black.withValues(),
           margin: const EdgeInsets.symmetric(vertical: 8),
           child: ListTile(
             leading: const Icon(Icons.comment, color: Colors.blueGrey),
