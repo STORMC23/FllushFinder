@@ -175,19 +175,39 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Center(child: Text('Bathroom Finder'))),
+      appBar: AppBar(
+        title: const Center(child: Text('Bathroom Finder')),
+        backgroundColor: const Color.fromARGB(255, 187, 223, 246),
+        elevation: 4.0,
+        shadowColor: Colors.black.withValues(),
+      ),
       body: _getBody(),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.map), label: 'Mapa'),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Perfil'),
-          BottomNavigationBarItem(icon: Icon(Icons.settings), label: 'Configuració'),
-          BottomNavigationBarItem(icon: Icon(Icons.leaderboard), label: 'Rànquing'),
-        ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: Colors.blue,
-        unselectedItemColor: Colors.grey,
-        onTap: _onItemTapped,
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+          color: const Color.fromARGB(255, 187, 223, 246),
+          boxShadow: [
+            BoxShadow(
+              color: const Color.fromARGB(160, 92, 92, 92).withValues(),
+              blurRadius: 6,
+              offset: const Offset(0, -2),
+            ),
+          ],
+        ),
+        child: BottomNavigationBar(
+          type: BottomNavigationBarType.fixed,
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          items: const [
+            BottomNavigationBarItem(icon: Icon(Icons.map), label: 'Mapa'),
+            BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Perfil'),
+            BottomNavigationBarItem(icon: Icon(Icons.settings), label: 'Configuració'),
+            BottomNavigationBarItem(icon: Icon(Icons.leaderboard), label: 'Rànquing'),
+          ],
+          currentIndex: _selectedIndex,
+          selectedItemColor: Colors.black,
+          unselectedItemColor: Colors.grey,
+          onTap: _onItemTapped,
+        ),
       ),
     );
   }
@@ -220,7 +240,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   borderRadius: BorderRadius.circular(10.0),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
+                      color: const Color.fromARGB(160, 92, 92, 92).withValues(),
                       blurRadius: 5,
                       spreadRadius: 2,
                     ),
