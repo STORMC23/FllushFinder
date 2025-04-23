@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_2/screens/QR.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class LavaboInfo extends StatefulWidget {
@@ -297,6 +298,28 @@ class _LavaboInfoState extends State<LavaboInfo> {
               ],
             ),
           ),
+          const SizedBox(height: 20),
+        ElevatedButton.icon(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => QRScannerScreen()),
+            );
+          },
+          icon: const Icon(Icons.qr_code_scanner),
+          label: const Text('Escanejar codi QR'),
+          style: ElevatedButton.styleFrom(
+            foregroundColor: Colors.white,
+            backgroundColor: const Color.fromARGB(255, 98, 174, 232),
+            elevation: 4,
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+            textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+          ),
+        ),
+
           const SizedBox(height: 10),
         ],
       ),
