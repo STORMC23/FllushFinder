@@ -22,6 +22,7 @@ class _UserProfileState extends State<UserProfile> {
   int _points = 0;
   String _profileImageUrl = '';
   String _definition = '';
+  bool _isEditing = false;
   TextEditingController _usernameController = TextEditingController();
   TextEditingController _nameController = TextEditingController();
   TextEditingController _definitionController = TextEditingController();
@@ -104,50 +105,117 @@ class _UserProfileState extends State<UserProfile> {
       body: ListView(
         padding: const EdgeInsets.all(16.0),
         children: [
-          // Perfil Image
-          GestureDetector(
-            onTap: _pickImage,
-            child: CircleAvatar(
-              radius: 50,
-              backgroundImage: _profileImageUrl.isNotEmpty
-                  ? FileImage(File(_profileImageUrl))
-                  : const AssetImage('assets/default_profile.png') as ImageProvider,
+          // Perfil Block editable
+          Card(
+            elevation: 5,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      GestureDetector(
+                        onTap: _isEditing ? _pickImage : null,
+                        child: CircleAvatar(
+                          radius: 40,
+                          backgroundImage: _profileImageUrl.isNotEmpty
+                              ? FileImage(File(_profileImageUrl))
+                              : const AssetImage('assets/default_profile.png') as ImageProvider,
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            TextField(
+                              controller: _usernameController,
+                              enabled: _isEditing,
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: _isEditing ? Colors.grey : Colors.black
+                              ),
+                              decoration: const InputDecoration(
+                                hintText: 'Nom d\'usuari',
+                                border: InputBorder.none,
+                                isDense: true,
+                              ),
+                              onChanged: (value) {
+                                setState(() {
+                                  _username = value;
+                                });
+                              },
+                            ),
+                            TextField(
+                              controller: _nameController,
+                              enabled: _isEditing,
+                              style: TextStyle(
+                                color: _isEditing ? Colors.grey : Colors.black,
+                              ),
+                              decoration: const InputDecoration(
+                                hintText: 'Nom',
+                                border: InputBorder.none,
+                                isDense: true,
+                              ),
+                              onChanged: (value) {
+                                setState(() {
+                                  _name = value;
+                                });
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
+                      IconButton(
+                        icon: Icon(_isEditing ? Icons.check : Icons.edit),
+                        onPressed: () {
+                          if (_isEditing) {
+                            _saveUserData();
+                          }
+                          setState(() {
+                            _isEditing = !_isEditing;
+                          });
+                        },
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 20),
+                  Text(
+                    'Definició',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: _isEditing ? Colors.grey : Colors.black
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  TextField(
+                    controller: _definitionController,
+                    enabled: _isEditing,
+                    maxLines: null,
+                    style: TextStyle(
+                      color: _isEditing ? Colors.grey : Colors.black,
+                    ),
+                    decoration: const InputDecoration(
+                      hintText: 'Escriu una definició...',
+                      border: InputBorder.none,
+                      isDense: true,
+                    ),
+                    onChanged: (value) {
+                      setState(() {
+                        _definition = value;
+                      });
+                    },
+                  ),
+                ],
+              ),
             ),
           ),
-          const SizedBox(height: 20),
 
-          // Nom and Username Fields
-          _buildEditableCard(
-            title: 'Nom',
-            controller: _nameController,
-            onChanged: (value) {
-              setState(() {
-                _name = value;
-              });
-            },
-          ),
-          const SizedBox(height: 10),
-          _buildEditableCard(
-            title: 'Nom d\'usuari',
-            controller: _usernameController,
-            onChanged: (value) {
-              setState(() {
-                _username = value;
-              });
-            },
-          ),
-          const SizedBox(height: 20),
-
-          // Definició Field
-          _buildEditableCard(
-            title: 'Definició',
-            controller: _definitionController,
-            onChanged: (value) {
-              setState(() {
-                _definition = value;
-              });
-            },
-          ),
           const SizedBox(height: 20),
 
           // Display points
@@ -156,21 +224,20 @@ class _UserProfileState extends State<UserProfile> {
             style: const TextStyle(fontSize: 18, color: Colors.blueAccent),
           ),
 
-          // Show images based on points
           const SizedBox(height: 20),
           _points > 50
-              ? Image.asset('assets/award_gold.png') // You can put images based on points
+              ? Image.asset('assets/award_gold.png')
               : _points > 20
                   ? Image.asset('assets/award_silver.png')
                   : Image.asset('assets/award_bronze.png'),
 
-          // Save button
           const SizedBox(height: 20),
           ElevatedButton(
             onPressed: _saveUserData,
             child: const Text('Guardar canvis'),
           ),
         ],
+
       ),
     );
   }
