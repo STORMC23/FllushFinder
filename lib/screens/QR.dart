@@ -41,7 +41,9 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
       appBar: AppBar(
         title: Text('Lector de Codis QR'),
         centerTitle: true,
-        backgroundColor: Colors.deepPurple,
+        backgroundColor: const Color.fromARGB(255, 187, 223, 246),
+        elevation: 4.0,
+        shadowColor: Colors.black.withValues(),
       ),
       body: Column(
         children: [
