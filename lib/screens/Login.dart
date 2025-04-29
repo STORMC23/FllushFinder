@@ -12,6 +12,7 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _gmailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  bool _isPasswordVisible = false; // Estat per mostrar/amagar la contrasenya
 
   Future<void> _login() async {
     final email = _gmailController.text.trim();
@@ -89,7 +90,8 @@ class _LoginScreenState extends State<LoginScreen> {
                 SizedBox(height: 40),
                 buildTextField(_gmailController, 'Correu Electrònic', Icons.email),
                 SizedBox(height: 20),
-                buildTextField(_passwordController, 'Contrasenya', Icons.lock, obscureText: true),
+                buildTextField(_passwordController, 'Contrasenya', Icons.lock,
+                    obscureText: true, isPasswordField: true),
                 SizedBox(height: 40),
                 _buildLoginButton(),
                 SizedBox(height: 20),
@@ -143,7 +145,7 @@ class _LoginScreenState extends State<LoginScreen> {
       onPressed: () {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => RegisterScreen()),
+          MaterialPageRoute(builder: (context) => RegisterUsersScreen()),
         );
       },
       style: _buttonStyle(),
@@ -163,10 +165,11 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  Widget buildTextField(TextEditingController controller, String label, IconData icon, {bool obscureText = false}) {
+  Widget buildTextField(TextEditingController controller, String label, IconData icon,
+      {bool obscureText = false, bool isPasswordField = false}) {
     return TextField(
       controller: controller,
-      obscureText: obscureText,
+      obscureText: isPasswordField ? !_isPasswordVisible : obscureText,
       style: TextStyle(color: Colors.white),
       decoration: InputDecoration(
         labelText: label,
@@ -176,6 +179,19 @@ class _LoginScreenState extends State<LoginScreen> {
           borderSide: BorderSide(color: Colors.white),
         ),
         prefixIcon: Icon(icon, color: Colors.white),
+        suffixIcon: isPasswordField
+            ? IconButton(
+                icon: Icon(
+                  _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                  color: Colors.white,
+                ),
+                onPressed: () {
+                  setState(() {
+                    _isPasswordVisible = !_isPasswordVisible;
+                  });
+                },
+              )
+            : null,
         filled: true,
         fillColor: Colors.blueAccent.withOpacity(0.3),
       ),

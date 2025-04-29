@@ -18,6 +18,8 @@ dependencies:
   location: ^8.0.0
   geolocator: ^13.0.3
   mobile_scanner: ^6.0.7
+  soundpool: ^2.3.0
+  provider: any
 
 dev_dependencies:
   flutter_test:
@@ -33,3 +35,4 @@ flutter:
     - assets/Splash/ToiletSplash.png
     - assets/
     - assets/Toilets/
+    - assets/wc.mp3

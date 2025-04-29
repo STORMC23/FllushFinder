@@ -1,5 +1,6 @@
 // ignore_for_file: file_names
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'HomeScreen.dart';
 import 'Login.dart';
@@ -56,37 +57,25 @@ class _SplashScreenState extends State<SplashScreen> {
               ),
               const SizedBox(height: 40),
               GestureDetector(
-                onTap: () {
+                onTap: () async {
                   Navigator.of(context).pushReplacement(
                     MaterialPageRoute(builder: (context) => LoginScreen()),
                   );
+                  /*Soundpool pool = Soundpool(streamType: StreamType.notification); 
+                  int soundId = await rootBundle.load("assets/wc.mp3").then((ByteData soundData) {
+                    return pool.load(soundData);
+                  });
+
+                  pool.play(soundId); */
+
+                  await Future.delayed(Duration(seconds: 7));
                 },
                 child: Image.asset(
                   'assets/Splash/ToiletSplash.png',
                   width: 150,
                 ),
               ),
-              const SizedBox(height: 50),
-              /*ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  shape: const CircleBorder(),
-                  padding: const EdgeInsets.all(25),
-                  backgroundColor: Colors.white,
-                  shadowColor: Colors.black54,
-                  elevation: 10,
-                ),
-                onPressed: () {
-                  Navigator.of(context).pushReplacement(
-                    MaterialPageRoute(builder: (context) => const HomeScreen()),
-                  );
-                },
-                child: const Icon(
-                  Icons.wc,
-                  size: 50,
-                  color: Colors.blueAccent,
-                ),
-              ),*/
-              const SizedBox(height: 20),
+              const SizedBox(height: 70),
               Text(
                 'Flush the doubt, find the spot!',
                 style: GoogleFonts.roboto(
